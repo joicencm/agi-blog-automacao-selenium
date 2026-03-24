@@ -131,6 +131,31 @@ options.addArguments("--window-size=1920,1080");
 - Upload no GitHub Actions
 
 ---
+## 🧪 Cenários de teste (BDD)
+🔹 Busca sem preenchimento
+
+```gherkin
+Scenario: Buscar sem digitar termo exibe comportamento inesperado
+Given que o usuário acessa o blog
+When ele clica na lupa e envia a busca sem digitar nada
+Then são exibidos resultados sem validação de termo obrigatório
+```
+
+### ⚠️ Observação importante
+Comportamento identificado:
+
+- Ao realizar uma busca sem digitar nenhum termo, o sistema retorna resultados normalmente
+- Não há validação exigindo o preenchimento do campo de busca
+- A mensagem esperada "Por favor, digite um termo para buscar" não é exibida
+
+### 📌 Ação necessária
+
+Este cenário deve ser avaliado pelo time de produto/UX, pois pode indicar:
+
+- Falta de validação de entrada
+- Comportamento não alinhado com boas práticas de usabilidade
+- Possível melhoria na experiência do usuário
+---
 ## 🚧 Melhorias futuras
 - Suporte a múltiplos navegadores (Firefox, Edge)
 - Implementação de relatórios (Allure / ExtentReports)
