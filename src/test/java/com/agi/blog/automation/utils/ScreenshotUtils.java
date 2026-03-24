@@ -14,15 +14,10 @@ public class ScreenshotUtils {
         try {
             // Remove caracteres inválidos
             name = name.replaceAll("[^a-zA-Z0-9\\-_]", "_");
-
-            // Timestamp para não sobrescrever
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
-            // Pasta target/screenshots
             File folder = new File("target/screenshots");
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
+            if (!folder.exists()) folder.mkdirs();
 
             File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
             File dest = new File(folder, name + "_" + timestamp + ".png");

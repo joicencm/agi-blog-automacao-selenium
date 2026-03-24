@@ -38,7 +38,7 @@ jobs:
         run: mkdir -p target/screenshots
 
       - name: Build e rodar testes
-        run: mvn clean test
+        run: mvn clean test -Dheadless=true
 
       - name: Upload screenshots
         if: failure()
