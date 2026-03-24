@@ -22,8 +22,6 @@ public class HomePage extends BasePage {
 
     public void abrirBusca() {
         try {
-            click(elements.menuItem("Seus benefícios")); // ativa o DOM
-
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
             WebElement lupa = wait.until(ExpectedConditions.elementToBeClickable(elements.lupa));
             lupa.click();
