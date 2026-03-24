@@ -7,16 +7,18 @@ import static org.junit.Assert.assertTrue;
 
 public class SearchSteps {
 
-    HomePage homePage = new HomePage();
-    SearchResultsPage resultsPage;
+    private HomePage homePage;
+    private SearchResultsPage resultsPage;
 
     @Given("que o usuário acessa o blog")
     public void acessarBlog() {
+        homePage = new HomePage(); // inicializa aqui, só quando necessário
         homePage.acessarUrl("https://blogdoagi.com.br/");
     }
 
     @When("ele busca por {string}")
     public void buscar(String termo) {
+        if (homePage == null) homePage = new HomePage();
         homePage.abrirBusca();
         homePage.buscar(termo);
     }
@@ -29,14 +31,15 @@ public class SearchSteps {
 
     @Then("deve exibir mensagem {string}")
     public void validarMensagemNenhumResultado(String mensagemEsperada) {
-        resultsPage = new SearchResultsPage(); // inicializa antes de usar
+        resultsPage = new SearchResultsPage();
         String mensagem = resultsPage.getMensagemNenhumResultado();
         assertTrue("Mensagem incorreta!", mensagem.contains(mensagemEsperada));
     }
 
     @When("ele clica na lupa")
     public void ele_clica_na_lupa() {
-        homePage.abrirBusca(); // implemente esse método na sua HomePage
+        if (homePage == null) homePage = new HomePage();
+        homePage.abrirBusca();
     }
 
     @Then("o campo de busca deve ser exibido para digitar o termo")
@@ -46,12 +49,8 @@ public class SearchSteps {
 
     @When("ele clica na lupa e envia a busca sem digitar nada")
     public void ele_clica_na_lupa_e_envia_a_busca_sem_digitar_nada() {
-        HomePage homePage = new HomePage();
-
-        // Clica na lupa
+        if (homePage == null) homePage = new HomePage();
         homePage.abrirBusca();
-
-        // Envia a busca sem digitar nada
         homePage.enviarBuscaVazia();
     }
 }
