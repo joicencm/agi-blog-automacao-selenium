@@ -1,5 +1,6 @@
 package com.agi.blog.automation.base;
 
+import com.agi.blog.automation.driver.DriverFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
@@ -7,19 +8,23 @@ public class BasePage {
 
     protected WebDriver driver;
 
-    public BasePage(WebDriver driver) {
-        this.driver = driver;
+    public BasePage() {
+        this.driver = DriverFactory.getDriver();
     }
 
-    protected void click(By locator) {
+    public void acessarUrl(String url) {
+        driver.get(url);
+    }
+
+    public void click(By locator) {
         driver.findElement(locator).click();
     }
 
-    protected void write(By locator, String text) {
-        driver.findElement(locator).sendKeys(text);
+    public void write(By locator, String texto) {
+        driver.findElement(locator).sendKeys(texto);
     }
 
-    protected String getText(By locator) {
-        return driver.findElement(locator).getText();
+    public void submit(By locator) {
+        driver.findElement(locator).submit();
     }
 }
