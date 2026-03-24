@@ -13,12 +13,16 @@ public class DriverFactory {
 
             ChromeOptions options = new ChromeOptions();
 
-            // 🔥 evita cache e problemas de scripts antigos
+            // Headless (necessário para CI/CD)
+            options.addArguments("--headless=new"); // ou "--headless" se versão antiga
+            options.addArguments("--window-size=1920,1080"); // garante que todos os elementos sejam visíveis
+
+            // Evita cache e problemas de scripts antigos
             options.addArguments("--incognito");
             options.addArguments("--disable-cache");
             options.addArguments("--disk-cache-size=0");
 
-            // (opcional) evita interferência de extensões
+            // Evita interferência de extensões
             options.addArguments("--disable-extensions");
 
             driver = new ChromeDriver(options);
