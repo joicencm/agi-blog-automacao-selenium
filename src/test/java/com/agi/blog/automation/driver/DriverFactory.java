@@ -30,7 +30,11 @@ public class DriverFactory {
 
             // Cria driver
             driver = new ChromeDriver(options);
-            driver.manage().window().maximize();
+
+            // só maximiza fora do headless
+            if (!headless.equalsIgnoreCase("true")) {
+                driver.manage().window().maximize();
+            }
         }
         return driver;
     }
