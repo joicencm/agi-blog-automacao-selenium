@@ -7,7 +7,6 @@ on:
     branches: [ main ]
 
 env:
-  # Força as Actions JavaScript a rodarem em Node.js 24
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -15,18 +14,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout do código
       - name: Checkout do repositório
         uses: actions/checkout@v3
 
-      # Configurar Java 17
       - name: Configurar Java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: '17'
 
-      # Cache do Maven para acelerar builds
       - name: Cache do Maven
         uses: actions/cache@v3
         with:
@@ -35,15 +31,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # Instalar Chromium (navegador headless)
       - name: Instalar Chromium
         run: sudo apt-get install -y chromium-browser chromium-chromedriver
 
-      # Rodar testes Maven
+      - name: Criar pasta screenshots
+        run: mkdir -p target/screenshots
+
       - name: Build e rodar testes
         run: mvn clean test
 
-      # Upload de screenshots caso falhe
       - name: Upload screenshots
         if: failure()
         uses: actions/upload-artifact@v4
