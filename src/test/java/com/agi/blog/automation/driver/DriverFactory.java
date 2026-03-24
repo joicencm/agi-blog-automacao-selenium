@@ -13,17 +13,25 @@ public class DriverFactory {
 
             ChromeOptions options = new ChromeOptions();
 
-            // Headless (necessário para CI/CD)
-            options.addArguments("--headless=new"); // ou "--headless" se versão antiga
-            options.addArguments("--window-size=1920,1080"); // garante que todos os elementos sejam visíveis
+            // Configuração para CI / headless
+            if (isCiEnvironment()) {
+                options.addArguments("--headless=new"); // ou "--headless" se versão antiga
+                options.addArguments("--disable-gpu"); // necessário no Linux headless
+                options.addArguments("--window-size=1920,1080");
+            }
 
-            // Evita cache e problemas de scripts antigos
+            // Configurações comuns
             options.addArguments("--incognito");
             options.addArguments("--disable-cache");
             options.addArguments("--disk-cache-size=0");
-
-            // Evita interferência de extensões
             options.addArguments("--disable-extensions");
+            options.addArguments("--no-sandbox"); // recomendado no Linux CI
+            options.addArguments("--disable-dev-shm-usage"); // evita crashes em runners
+
+            // Caminho do ChromeDriver (apenas se necessário no CI)
+            if (isCiEnvironment()) {
+                System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
+            }
 
             driver = new ChromeDriver(options);
             driver.manage().window().maximize();
@@ -36,5 +44,11 @@ public class DriverFactory {
             driver.quit();
             driver = null;
         }
+    }
+
+    // Detecta se está rodando no GitHub Actions / CI
+    private static boolean isCiEnvironment() {
+        String ci = System.getenv("CI");
+        return ci != null && ci.equalsIgnoreCase("true");
     }
 }
