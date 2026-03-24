@@ -2,6 +2,7 @@ package com.agi.blog.automation.pages;
 
 import com.agi.blog.automation.base.BasePage;
 import com.agi.blog.automation.elements.HomeElements;
+import com.agi.blog.automation.utils.ScreenshotUtils;
 import com.agi.blog.automation.utils.Waits;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -20,15 +21,21 @@ public class HomePage extends BasePage {
     }
 
     public void abrirBusca() {
-        click(elements.menuItem("Stories")); // ativa o DOM
+        try {
+            click(elements.menuItem("Stories")); // ativa o DOM
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-        WebElement lupa = wait.until(ExpectedConditions.elementToBeClickable(elements.lupa));
-        lupa.click();
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            WebElement lupa = wait.until(ExpectedConditions.elementToBeClickable(elements.lupa));
+            lupa.click();
 
-        // Espera o input realmente aparecer
-        wait.until(ExpectedConditions.visibilityOfElementLocated(elements.campoBusca));
-        wait.until(ExpectedConditions.elementToBeClickable(elements.campoBusca));
+            // Espera o input realmente aparecer
+            wait.until(ExpectedConditions.visibilityOfElementLocated(elements.campoBusca));
+            wait.until(ExpectedConditions.elementToBeClickable(elements.campoBusca));
+        } catch (Exception e) {
+            // Screenshot imediato no momento do erro
+            ScreenshotUtils.takeScreenshot(driver, "erro_abrirBusca");
+            throw e; // relança para falhar o teste normalmente
+        }
     }
 
     public void buscar(String termo) {

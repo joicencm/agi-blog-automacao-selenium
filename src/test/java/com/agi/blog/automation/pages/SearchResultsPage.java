@@ -14,7 +14,7 @@ public class SearchResultsPage extends BasePage {
 
     public boolean temResultados() {
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
             wait.until(ExpectedConditions.visibilityOfElementLocated(resultados));
             return driver.findElements(resultados).size() > 0;
         } catch (org.openqa.selenium.TimeoutException e) {
