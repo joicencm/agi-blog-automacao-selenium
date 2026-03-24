@@ -14,15 +14,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout do código
       - name: Checkout do repositório
         uses: actions/checkout@v3
 
+      # 2. Configurar Java 17
       - name: Configurar Java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: '17'
 
+      # 3. Cache do Maven
       - name: Cache do Maven
         uses: actions/cache@v3
         with:
@@ -31,15 +34,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Instalar Chromium
-        run: sudo apt-get install -y chromium-browser chromium-chromedriver
+      # 4. Instalar Google Chrome e chromedriver compatível
+      - name: Instalar Google Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
 
+      # 5. Criar pasta para screenshots
       - name: Criar pasta screenshots
         run: mkdir -p target/screenshots
 
+      # 6. Rodar testes Maven em headless
       - name: Build e rodar testes
-        run: mvn clean test -Dheadless=true -X
+        run: mvn clean test -Dheadless=true
 
+      # 7. Upload de screenshots caso falhe
       - name: Upload screenshots
         if: failure()
         uses: actions/upload-artifact@v4

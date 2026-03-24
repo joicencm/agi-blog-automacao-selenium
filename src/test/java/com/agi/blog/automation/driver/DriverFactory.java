@@ -19,13 +19,15 @@ public class DriverFactory {
             options.addArguments("--disk-cache-size=0");
             options.addArguments("--disable-extensions");
 
-            // Opcional: rodar headless no CI
-            if (System.getProperty("headless", "false").equals("true")) {
+            // Headless quando rodar no CI ou quando passado -Dheadless=true
+            String headless = System.getProperty("headless", "false");
+            if (headless.equalsIgnoreCase("true")) {
                 options.addArguments("--headless=new");
                 options.addArguments("--no-sandbox");
                 options.addArguments("--disable-dev-shm-usage");
             }
 
+            // Cria driver
             driver = new ChromeDriver(options);
             driver.manage().window().maximize();
         }
