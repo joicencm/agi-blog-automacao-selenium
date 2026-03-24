@@ -119,8 +119,7 @@ Problemas:
 ```Java
 options.addArguments("--window-size=1920,1080");
 ```
-
-Remoção do maximize() em headless
+- Remoção do maximize() em headless
 
 ---
 ## 🔹 3. Screenshots não eram gerados
@@ -131,12 +130,14 @@ Remoção do maximize() em headless
 - Captura no momento da falha
 - Upload no GitHub Actions
 
+---
 ## 🚧 Melhorias futuras
 - Suporte a múltiplos navegadores (Firefox, Edge)
 - Implementação de relatórios (Allure / ExtentReports)
 - Execução paralela de testes
 - Testes mais robustos para navegação do site
 
+---
 ## 🧑‍💼 Autor
 
 Joice Martins
