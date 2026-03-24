@@ -20,8 +20,15 @@ public class HomePage extends BasePage {
     }
 
     public void abrirBusca() {
-       click(elements.menuItem("Stories"));
-        driver.findElement(elements.lupa).click();
+        click(elements.menuItem("Stories")); // ativa o DOM
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebElement lupa = wait.until(ExpectedConditions.elementToBeClickable(elements.lupa));
+        lupa.click();
+
+        // Espera o input realmente aparecer
+        wait.until(ExpectedConditions.visibilityOfElementLocated(elements.campoBusca));
+        wait.until(ExpectedConditions.elementToBeClickable(elements.campoBusca));
     }
 
     public void buscar(String termo) {

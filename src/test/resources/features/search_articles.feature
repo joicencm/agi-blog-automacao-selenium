@@ -8,7 +8,7 @@ Feature: Busca de artigos
   Scenario: Deve exibir mensagem ao buscar termo inválido
     Given que o usuário acessa o blog
     When ele busca por "abcd1234"
-    Then deve exibir mensagem "Lamentamos, mas nada foi encontrado para sua pesquisa, tente novamente com outras palavras."
+    Then deve exibir mensagem "Lamentamos, mas nada foi encontrado para sua pesquisa, tente novamente com outras palavras"
 
   Scenario: Exibir campo de busca ao clicar na lupa
     Given que o usuário acessa o blog
