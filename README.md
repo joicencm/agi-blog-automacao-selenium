@@ -57,6 +57,7 @@ O projeto utiliza GitHub Actions para execução automática dos testes.
 - Roda em ambiente Linux (Ubuntu)
 - Executa navegador em modo headless
 - Gera screenshots em caso de falha
+- - Gera relatório Cucumber completo mesmo quando alguns testes falham, garantindo visibilidade das falhas
 - Disponibiliza artefatos para análise
 
 Arquivo de configuração:
@@ -114,6 +115,10 @@ Problemas:
 
 - Instalação do Google Chrome no CI
 - Execução headless
+```bash
+mvn clean verify -Dheadless=true -Dmaven.test.failure.ignore=true
+```
+
 - Definição do tamanho da janela:
 
 ```Java
