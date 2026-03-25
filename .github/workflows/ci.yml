@@ -46,7 +46,7 @@ jobs:
 
       # 6. Rodar testes Maven em headless
       - name: Build e rodar testes
-        run: mvn clean test -Dheadless=true
+        run: mvn clean verify -Dheadless=true
 
       # 7. Upload de screenshots caso falhe
       - name: Upload screenshots
@@ -55,3 +55,11 @@ jobs:
         with:
           name: screenshots
           path: target/screenshots/
+
+      # 8. Upload do relatório Cucumber
+      - name: Upload relatório Cucumber
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report
+          path: target/cucumber-report/

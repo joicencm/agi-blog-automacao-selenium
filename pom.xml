@@ -56,6 +56,31 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
             </plugin>
+
+            <plugin>
+                <groupId>net.masterthought</groupId>
+                <artifactId>maven-cucumber-reporting</artifactId>
+                <version>5.7.4</version>
+                <executions>
+                    <execution>
+                        <id>execution</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <projectName>Automacao Selenium</projectName>
+                            <outputDirectory>${project.build.directory}/cucumber-report</outputDirectory>
+                            <buildNumber>1</buildNumber>
+
+                            <jsonFiles>
+                                <param>${project.build.directory}/cucumber.json</param>
+                            </jsonFiles>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

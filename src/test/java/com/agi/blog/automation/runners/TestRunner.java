@@ -10,8 +10,11 @@ import io.cucumber.junit.CucumberOptions;
         glue = "com.agi.blog.automation.steps",
         plugin = {
                 "pretty",
-                "html:target/cucumber-report.html"
-        }
+                "html:target/cucumber-report.html",
+                "json:target/cucumber.json",
+                "junit:target/cucumber.xml"
+        },
+        monochrome = true
 )
 public class TestRunner {
 }
