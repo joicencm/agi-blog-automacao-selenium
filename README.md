@@ -45,7 +45,7 @@ mvn clean test
 ```
 ### ▶️ Executar em modo headless
 ```bash
-mvn clean test -Dheadless=true
+mvn clean verify -Dheadless=true -Dmaven.test.failure.ignore=true
 ```
 
 ---
@@ -84,56 +84,43 @@ Arquivo de configuração:
 
 ## ⚠️ Problemas encontrados e soluções
 
-### 🔹 1. Redirecionamento para URL com /#
+### Lupa de busca e redirecionamento para URL com /#
 
-O site apresenta comportamento dinâmico, redirecionando para:
+O blog utiliza SPA (Single Page Application), fazendo com que ao clicar na lupa:
 
-https://blog.agibank.com.br/#
+- O campo de busca nem sempre apareça
+- O site redireciona intermitentemente para [https://blog.agibank.com.br/#](https://blog.agibank.com.br/#)
 
-Impactos:
+**Impactos na automação:**
 
-- Elementos não disponíveis imediatamente
-- Falhas ao clicar na lupa ou menu
-- TimeoutException ao aguardar elementos que não estavam visíveis no DOM
+- Falha ao clicar na lupa via Selenium
+- TimeoutException ao aguardar o campo de busca
 
-✔ Solução/Alternativas:
+### 💡 Sugestões de melhorias na implementação e automação
 
-- Interação prévia com elementos (Ex. menu "Stories") para garantir renderização do DOM
-- Uso de esperas explícitas (WebDriverWait)
-- Validação de visibilidade e interatividade antes de ações
+#### 1. Campo de busca e SPA
 
----
-### 🔹 2. Diferença entre execução local e CI
+O clique na lupa nem sempre abre o campo de busca de forma confiável, devido ao comportamento de SPA, que pode redirecionar para `/#` ou atrasar a renderização do input.
 
-Problemas:
+**Sugestão para implementação do site:**
 
-- Testes passavam localmente, mas falhavam no CI
-- SessionNotCreatedException
-- element not interactable
+- Permitir que o campo de busca seja acessível diretamente pelo DOM, sem depender exclusivamente do clique na lupa
+- Adicionar um ID ou atributo estático no input de busca, garantindo que a automação consiga localizar e interagir com ele de forma consistente
+- Avaliar se é possível evitar redirecionamentos intermitentes ao abrir a busca, melhorando previsibilidade para testes end-to-end
 
-✔ Solução:
+#### 2. Alternativas de automação
 
-- Instalação do Google Chrome no CI
-- Execução headless
-```bash
-mvn clean verify -Dheadless=true -Dmaven.test.failure.ignore=true
-```
+Embora este projeto utilize Selenium + Java, outras ferramentas podem simplificar cenários como este, devido à melhor manipulação de SPA e eventos assíncronos:
 
-- Definição do tamanho da janela:
+- **Cypress**
+  - Executa dentro do navegador, garantindo que o DOM esteja sempre pronto antes da interação
+  - Permite esperar elementos de forma mais natural (`cy.get().click()`) sem precisar de `JavascriptExecutor`
+  - Ideal para testes de interface altamente dinâmicos
 
-```Java
-options.addArguments("--window-size=1920,1080");
-```
-- Remoção do maximize() em headless
-
----
-## 🔹 3. Screenshots não eram gerados
-
-✔ Solução:
-
-- Criação automática da pasta target/screenshots
-- Captura no momento da falha
-- Upload no GitHub Actions
+- **Playwright (PL)**
+  - Suporte robusto a múltiplos navegadores
+  - Esperas automáticas de elementos e eventos, reduzindo flakiness
+  - Suporte a execução headless e gravação de vídeos/screenshots
 
 ---
 ## 🧪 Cenários de teste (BDD)

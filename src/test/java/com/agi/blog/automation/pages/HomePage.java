@@ -22,27 +22,30 @@ public class HomePage extends BasePage {
     }
 
     /**
-     * Abre o campo de busca de forma confiável, mesmo que a página redirecione para /#
+     * Abre o campo de busca de forma confiável
      */
     public void abrirBusca() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-
             // 1️⃣ Espera a lupa estar presente no DOM
-            wait.until(ExpectedConditions.presenceOfElementLocated(elements.lupa));
-            WebElement lupa = driver.findElement(elements.lupa);
+            WebElement lupa = wait.until(ExpectedConditions.presenceOfElementLocated(elements.lupa));
 
-            // 2️⃣ Abre a busca usando JavaScript para evitar redirecionamento
+            // 2️⃣ Clica na lupa via JS para evitar problemas de SPA/redirecionamento
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", lupa);
 
-            // 3️⃣ Espera o campo de busca aparecer e ficar clicável
-            wait.until(ExpectedConditions.visibilityOfElementLocated(elements.campoBusca));
-            wait.until(ExpectedConditions.elementToBeClickable(elements.campoBusca));
+            // 3️⃣ Espera o campo de busca aparecer
+            WebElement campo = wait.until(ExpectedConditions.visibilityOfElementLocated(elements.campoBusca));
+
+            // 4️⃣ Garante que o campo está clicável e foca nele
+            wait.until(ExpectedConditions.elementToBeClickable(campo));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].focus();", campo);
 
         } catch (Exception e) {
             ScreenshotUtils.takeScreenshot(driver, "erro_abrirBusca");
-            throw e;
+            throw new RuntimeException("Falha ao abrir campo de busca", e);
         }
+        click(elements.lupa);
     }
 
     /**

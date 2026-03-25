@@ -63,3 +63,10 @@ jobs:
         with:
           name: cucumber-report
           path: target/cucumber-report/
+
+      # 9. Publicar relatório Cucumber no GitHub Pages
+      - name: Publicar relatório HTML
+        uses: peaceiris/actions-gh-pages@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: target/cucumber-report
