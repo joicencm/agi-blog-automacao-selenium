@@ -8,18 +8,19 @@ import io.cucumber.java.AfterStep;
 
 public class Hooks {
 
-    @AfterStep
-    public void afterStep(Scenario scenario) {
-        if (scenario.isFailed()) {
-            ScreenshotUtils.takeScreenshot(
-                    DriverFactory.getDriver(),
-                    scenario.getName().replaceAll(" ", "_") + "_step"
-            );
-        }
-    }
-
     @After
     public void tearDown(Scenario scenario) {
-        DriverFactory.quitDriver();
+        try {
+            if (scenario.isFailed()) {
+                ScreenshotUtils.takeScreenshot(
+                        DriverFactory.getDriver(),
+                        scenario.getName().replaceAll(" ", "_")
+                );
+            }
+        } catch (Exception e) {
+            System.out.println("Erro ao capturar screenshot: " + e.getMessage());
+        } finally {
+            DriverFactory.quitDriver();
+        }
     }
 }
