@@ -16,13 +16,15 @@ public class Waits {
         this.driver = driver;
     }
 
-    public void waitUntilClickable(By locator, int seconds) {
+    public WebElement waitUntilClickable(By locator, int seconds) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(seconds));
         wait.until(ExpectedConditions.elementToBeClickable(locator));
+        return null;
     }
 
-    public void waitUntilVisible(By locator, int seconds) {
+    public WebElement waitUntilVisible(By locator, int seconds) {
         new WebDriverWait(driver, Duration.ofSeconds(seconds))
                 .until(ExpectedConditions.visibilityOfElementLocated(locator));
+        return null;
     }
 }

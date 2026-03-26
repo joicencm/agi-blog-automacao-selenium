@@ -1,5 +1,3 @@
-Projeto desenvolvido com foco em práticas de automação modernas, incluindo execução em CI/CD e tratamento de cenários reais de falha em ambiente headless.
-
 # 🧪 Automação de Testes - Blog Agibank
 
 ## 📋 Descrição
@@ -13,14 +11,18 @@ Os testes validam funcionalidades principais do site, com foco em:
 - Exibição de resultados
 - Comportamento da interface de busca
 
-A automação foi desenvolvida utilizando boas práticas como **Page Object Model (POM)** e **BDD com Cucumber**.
+A automação foi desenvolvida utilizando boas práticas como:
+
+- Page Object Model (POM)
+- BDD com Cucumber
+- Separação entre testes de UI e testes funcionais
 
 ---
 
 ## 🚀 Tecnologias utilizadas
 
 - Java 17
-- Selenium WebDriver 4.14.0
+- Selenium WebDriver
 - Maven
 - Cucumber (BDD)
 - JUnit
@@ -40,121 +42,162 @@ A automação foi desenvolvida utilizando boas práticas como **Page Object Mode
 
 ### ▶️ Executar localmente
 
-```bash
+```` bash
 mvn clean test
-```
+````
+---
+
 ### ▶️ Executar em modo headless
-```bash
+
+``` bash
 mvn clean verify -Dheadless=true -Dmaven.test.failure.ignore=true
 ```
 
 ---
+
 ## 🔄 Integração Contínua (CI)
+
 O projeto utiliza GitHub Actions para execução automática dos testes.
 
-✔ O que o CI faz:
+### ✔ O que o CI faz:
+
 - Executa testes a cada push ou pull request
 - Roda em ambiente Linux (Ubuntu)
 - Executa navegador em modo headless
 - Gera screenshots em caso de falha
-- - Gera relatório Cucumber completo mesmo quando alguns testes falham, garantindo visibilidade das falhas
+- Gera relatório Cucumber mesmo com falhas
 - Disponibiliza artefatos para análise
 
 Arquivo de configuração:
+
 ```
 .github/workflows/ci.yml
 ```
+---
 
-###  📸 Evidências de falha (Screenshots)
-- Screenshots são gerados automaticamente em falhas
-- Salvos em: 
-```bash
-- target/screenshots/
-```
-- No CI, são disponibilizados como artefatos
+## 📸 Evidências de falha (Screenshots)
 
-### 📑 Funcionalidades automatizadas
+- Geradas automaticamente em falhas
+- Salvas em: target/screenshots/
+- No CI, são disponibilizadas como artefatos
+
+---
+
+## 📑 Funcionalidades automatizadas
+
 - Acessar o blog
 - Abrir campo de busca
+- Validar exibição do campo de busca
 - Buscar por termos válidos
 - Validar resultados retornados
-- Buscar termos inválidos e validar mensagem
+- Buscar termos inválidos
+- Validar mensagens de retorno
 
 ---
 
-## ⚠️ Problemas encontrados e soluções
+## ⚠️ Problemas identificados na aplicação
 
-### Lupa de busca e redirecionamento para URL com /#
+### 🔍 Instabilidade na funcionalidade de busca
 
-O blog utiliza SPA (Single Page Application), fazendo com que ao clicar na lupa:
+Durante a automação, foi identificado comportamento inconsistente na funcionalidade de busca.
 
-- O campo de busca nem sempre apareça
-- O site redireciona intermitentemente para [https://blog.agibank.com.br/#](https://blog.agibank.com.br/#)
+### 📌 Comportamento observado
 
-**Impactos na automação:**
+- Ao clicar na lupa:
+  - O campo de busca nem sempre é exibido
+  - O site pode redirecionar para: https://blog.agibank.com.br/#
 
-- Falha ao clicar na lupa via Selenium
-- TimeoutException ao aguardar o campo de busca
+- Ao realizar buscas:
+  - O termo digitado nem sempre é considerado
+  - O sistema pode redirecionar para:
+    - https://blog.agibank.com.br/?s=Pix
+    - https://blog.agibank.com.br/?s=Pix#
 
-### 💡 Sugestões de melhorias na implementação e automação
-
-#### 1. Campo de busca e SPA
-
-O clique na lupa nem sempre abre o campo de busca de forma confiável, devido ao comportamento de SPA, que pode redirecionar para `/#` ou atrasar a renderização do input.
-
-**Sugestão para implementação do site:**
-
-- Permitir que o campo de busca seja acessível diretamente pelo DOM, sem depender exclusivamente do clique na lupa
-- Adicionar um ID ou atributo estático no input de busca, garantindo que a automação consiga localizar e interagir com ele de forma consistente
-- Avaliar se é possível evitar redirecionamentos intermitentes ao abrir a busca, melhorando previsibilidade para testes end-to-end
-
-#### 2. Alternativas de automação
-
-Embora este projeto utilize Selenium + Java, outras ferramentas podem simplificar cenários como este, devido à melhor manipulação de SPA e eventos assíncronos:
-
-- **Cypress**
-  - Executa dentro do navegador, garantindo que o DOM esteja sempre pronto antes da interação
-  - Permite esperar elementos de forma mais natural (`cy.get().click()`) sem precisar de `JavascriptExecutor`
-  - Ideal para testes de interface altamente dinâmicos
-
-- **Playwright (PL)**
-  - Suporte robusto a múltiplos navegadores
-  - Esperas automáticas de elementos e eventos, reduzindo flakiness
-  - Suporte a execução headless e gravação de vídeos/screenshots
+- Em alguns casos:
+  - A busca não é executada mesmo com o campo preenchido
 
 ---
-## 🧪 Cenários de teste (BDD)
-🔹 Busca sem preenchimento
 
-```gherkin
-Scenario: Buscar sem digitar termo exibe comportamento inesperado
-Given que o usuário acessa o blog
-When ele clica na lupa e envia a busca sem digitar nada
-Then são exibidos resultados sem validação de termo obrigatório
-```
+### 🎯 Impacto
 
-### ⚠️ Observação importante
-Comportamento identificado:
+- Testes automatizados se tornam instáveis (flaky)
+- Comportamento inconsistente também pode afetar usuários reais
+- Dificulta a validação confiável da busca
 
-- Ao realizar uma busca sem digitar nenhum termo, o sistema retorna resultados normalmente
-- Não há validação exigindo o preenchimento do campo de busca
-- A mensagem esperada "Por favor, digite um termo para buscar" não é exibida
-
-### 📌 Ação necessária
-
-Este cenário deve ser avaliado pelo time de produto/UX, pois pode indicar:
-
-- Falta de validação de entrada
-- Comportamento não alinhado com boas práticas de usabilidade
-- Possível melhoria na experiência do usuário
 ---
+
+### 🧪 Evidência técnica
+
+- Problema reproduzido com:
+  - Selenium WebDriver
+  - Cypress (inclusive com `force: true`)
+
+- Persistência do problema mesmo com:
+  - Esperas explícitas
+  - Interações via JavaScript
+  - Simulação de eventos de input
+
+---
+
+### 💡 Possíveis causas
+
+- Manipulação assíncrona do DOM
+- Re-renderização do componente de busca
+- Eventos de busca não disparados corretamente
+- Falha no controle de estado do input
+
+---
+
+## 🚨 Sugestões de melhoria para a aplicação
+
+- Garantir que o campo de busca:
+  - esteja sempre disponível no DOM
+  - não dependa exclusivamente de eventos JavaScript
+
+- Evitar redirecionamentos inesperados para `/#`
+
+- Garantir que:
+  - o valor digitado seja corretamente persistido
+  - os eventos de busca sejam disparados de forma consistente
+
+- Adicionar identificadores estáveis (ex: `id`, `data-testid`)
+
+---
+
+## 🧪 Cenários de teste
+
+### ⚠️ Busca sem preenchimento (comportamento inesperado)
+
+````gherkin
+Scenario: Buscar sem digitar termo não bloqueia a busca  
+Given que o usuário acessa o blog  
+When ele clica na lupa e envia a busca sem digitar nada  
+Then o sistema retorna resultados sem validar o campo obrigatório
+````
+
+### 📌 Observação
+
+- O comportamento esperado seria a exibição de uma mensagem como:  
+  "Por favor, digite um termo para buscar"
+
+- Porém, atualmente:
+  - O sistema permite busca vazia
+  - Retorna resultados genéricos
+  - Não valida a obrigatoriedade do campo
+
+- Este cenário indica uma possível melhoria de UX e regra de negócio
+
+---
+
 ## 🚧 Melhorias futuras
+
 - Suporte a múltiplos navegadores (Firefox, Edge)
 - Implementação de relatórios (Allure / ExtentReports)
 - Execução paralela de testes
-- Testes mais robustos para navegação do site
+- Adoção de ferramentas modernas como Playwright
 
 ---
+
 ## 🧑‍💼 Autor
 
 Joice Martins
