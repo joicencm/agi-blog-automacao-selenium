@@ -44,11 +44,19 @@ jobs:
       - name: Criar pasta screenshots
         run: mkdir -p target/screenshots
 
-      # 6. Rodar testes Maven em modo headless
-      - name: Build e rodar testes
-        run: mvn clean verify -Dheadless=true -Dmaven.test.failure.ignore=true
+      # 6. Rodar testes Maven (gera JSON e screenshots)
+      - name: Rodar testes
+        run: mvn clean test -Dheadless=true
 
-      # 7. Upload de screenshots
+      # 7. Gerar relatório Cucumber (HTML + JSON)
+      - name: Gerar relatório Cucumber
+        run: mvn verify
+
+      # 8. Debug: listar arquivos gerados
+      - name: Listar arquivos target
+        run: ls -R target
+
+      # 9. Upload de screenshots
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -56,7 +64,7 @@ jobs:
           name: screenshots
           path: target/screenshots/
 
-      # 8. Upload do relatório Cucumber
+      # 10. Upload do relatório Cucumber
       - name: Upload relatório Cucumber
         if: always()
         uses: actions/upload-artifact@v4
@@ -64,10 +72,11 @@ jobs:
           name: cucumber-report
           path: target/cucumber-report/
 
-      # 9. Publicar relatório HTML no GitHub Pages
+      # 11. Publicar relatório HTML no GitHub Pages
       - name: Publicar relatório HTML
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: target/cucumber-report/
+          force_orphan: true
