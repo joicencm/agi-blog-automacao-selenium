@@ -34,21 +34,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # 4. Instalar Google Chrome e chromedriver compatível
+      # 4. Instalar Google Chrome
       - name: Instalar Google Chrome
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
-      # 5. Criar pasta para screenshots
+      # 5. Criar pasta para screenshots (antes dos testes)
       - name: Criar pasta screenshots
         run: mkdir -p target/screenshots
 
-      # 6. Rodar testes Maven em headless
+      # 6. Build e rodar testes em modo headless se solicitado
       - name: Build e rodar testes
         run: mvn clean verify -Dheadless=true -Dmaven.test.failure.ignore=true
 
-      # 7. Upload de screenshots caso falhe
+      # 7. Verificar screenshots geradas (para debug)
+      - name: Verificar screenshots geradas
+        run: ls -l target/screenshots/ || echo "Nenhuma screenshot encontrada"
+
+      # 8. Upload de screenshots se houver falhas
       - name: Upload screenshots
         if: failure()
         uses: actions/upload-artifact@v4
@@ -56,7 +60,11 @@ jobs:
           name: screenshots
           path: target/screenshots/
 
-      # 8. Upload do relatório Cucumber
+      # 9. Verificar arquivos do relatório Cucumber (para debug)
+      - name: Verificar arquivos do relatório
+        run: ls -l target/cucumber-report/ || echo "Relatório não encontrado"
+
+      # 10. Upload do relatório Cucumber (sempre)
       - name: Upload relatório Cucumber
         if: always()
         uses: actions/upload-artifact@v4
@@ -64,9 +72,20 @@ jobs:
           name: cucumber-report
           path: target/cucumber-report/
 
-      # 9. Publicar relatório Cucumber no GitHub Pages
+      # 11. Publicar relatório HTML no GitHub Pages (sempre)
       - name: Publicar relatório HTML
+        if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: target/cucumber-report
+          publish_dir: target/cucumber-report/
+
+      # 12. Post Cache do Maven (sempre)
+      - name: Post Cache do Maven
+        if: always()
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-

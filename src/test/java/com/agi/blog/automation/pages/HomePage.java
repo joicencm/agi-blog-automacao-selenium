@@ -68,6 +68,10 @@ public class HomePage extends BasePage {
     }
 
     private void abrirMenuELupa(String menu) {
+        String currentUrl = (String) ((JavascriptExecutor) driver).executeScript("return window.location.href;");
+        if (currentUrl.contains("#")) {
+            click(elements.menuItem("Seus benefícios"));
+        }
         click(elements.menuItem(menu));
         click(elements.lupa);
         waits.waitUntilVisible(elements.campoBusca, 10);
