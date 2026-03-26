@@ -2,9 +2,14 @@ package com.agi.blog.automation.pages;
 
 import com.agi.blog.automation.base.BasePage;
 import com.agi.blog.automation.elements.HomeElements;
+import com.agi.blog.automation.utils.ScreenshotUtils;
 import com.agi.blog.automation.utils.Waits;
-import org.openqa.selenium.Keys;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class HomePage extends BasePage {
 
@@ -17,44 +22,54 @@ public class HomePage extends BasePage {
     }
 
     /**
-     * Abre o campo de busca (fluxo normal esperado)
+     * Abre o campo de busca de forma confiável
      */
     public void abrirBusca() {
-        WebElement lupa = waits.waitUntilClickable(elements.lupa, 10);
-        lupa.click();
-
-        waits.waitUntilVisible(elements.campoBusca, 10);
+        click(elements.lupa);
     }
 
     /**
-     * Realiza busca com termo válido
+     * Preenche o campo de busca e envia a pesquisa
      */
     public void buscar(String termo) {
-        WebElement campo = waits.waitUntilVisible(elements.campoBusca, 10);
+        abrirMenuELupa("Serviços");
+        aguardarCampoBusca();
+        write(elements.campoBusca, termo);
+        submit(elements.campoBusca);
 
-        campo.click();
-        campo.clear();
-        campo.sendKeys(termo);
-        campo.sendKeys(Keys.ENTER);
     }
 
     /**
-     * Valida se campo de busca está visível
+     * Verifica se o campo de busca está visível e habilitado
      */
     public boolean campoBuscaVisivel() {
+        abrirMenuELupa("Stories");
         try {
-            WebElement campo = waits.waitUntilVisible(elements.campoBusca, 5);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebElement campo = wait.until(ExpectedConditions.visibilityOfElementLocated(elements.campoBusca));
             return campo.isDisplayed() && campo.isEnabled();
-        } catch (Exception e) {
+        } catch (org.openqa.selenium.TimeoutException e) {
             return false;
         }
     }
 
     /**
-     * Envia busca vazia (comportamento esperado do sistema)
+     * Envia a busca sem digitar nenhum termo
      */
     public void enviarBuscaVazia() {
-        WebElement campo = waits.waitUntilVisible(elements.campoBusca, 10);
-        campo.sendKeys(Keys.ENTER);
+        abrirMenuELupa("Sua segurança");
+        aguardarCampoBusca();
+        submit(elements.campoBusca);
+    }
+
+    private void aguardarCampoBusca() {
+        waits.waitUntilVisible(elements.campoBusca, 30);
+        waits.waitUntilClickable(elements.campoBusca, 30);
+    }
+
+    private void abrirMenuELupa(String menu) {
+        click(elements.menuItem(menu));
+        click(elements.lupa);
+        waits.waitUntilVisible(elements.campoBusca, 10);
     }
 }
