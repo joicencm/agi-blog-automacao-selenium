@@ -6,27 +6,24 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout do repositório
-      - name: 1. Checkout do repositório
+      # 1. Checkout
+      - name: Checkout do repositório
         uses: actions/checkout@v3
 
-      # 2. Configurar Java 17
-      - name: 2. Configurar Java
+      # 2. Java
+      - name: Configurar Java 17
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: '17'
 
-      # 3. Cache do Maven
-      - name: 3. Cache do Maven
+      # 3. Cache Maven
+      - name: Cache do Maven
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -34,46 +31,49 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # 4. Instalar Google Chrome
-      - name: 4. Instalar Google Chrome
+      # 4. Instalar Chrome (mais confiável)
+      - name: Instalar Google Chrome
         run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          echo "deb http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
-      # 5. Criar pasta para screenshots
-      - name: 5. Criar pasta screenshots
+      # 5. Criar pasta screenshots
+      - name: Criar pasta screenshots
         run: mkdir -p target/screenshots
 
-      # 6. Rodar testes Maven (gera JSON e screenshots)
-      - name: 6. Rodar testes
-        run: mvn clean test -Dheadless=true || true
+      # 6. Rodar testes + gerar relatório
+      - name: Rodar testes e relatório
+        run: mvn clean verify -Dheadless=true
 
-      # 7. Gerar relatório Cucumber (HTML + JSON)
-      - name: 7. Gerar relatório Cucumber
-        run: mvn verify || true
+      # 7. Debug (MUITO IMPORTANTE)
+      - name: Debug - listar target
+        if: always()
+        run: |
+          echo "=== TARGET ==="
+          ls -R target || true
 
-      # 8. Debug: listar conteúdo da pasta target
-      - name: 8. Listar conteúdo da pasta target
-        run: ls -R target
-
-      # 9. Upload de screenshots
-      - name: 9. Upload screenshots
+      # 8. Upload screenshots
+      - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: screenshots
           path: target/screenshots/
 
-      # 10. Upload do relatório Cucumber
-      - name: 10. Upload relatório Cucumber
+      # 9. Upload relatório
+      - name: Upload relatório Cucumber
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cucumber-report
           path: target/cucumber-report/
 
-      # 11. Publicar relatório HTML no GitHub Pages
-      - name: 11. Publicar relatório HTML
+      # 10. Publicar no GitHub Pages
+      - name: Publicar relatório HTML
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
